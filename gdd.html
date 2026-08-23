@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GDD Calculator — VitiKit</title>
+<meta name="description" content="Single-sine growing degree day accumulator with grapevine phenology prediction. Base 10°C / 50°F.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="logo" href="index.html"><svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="8" r="4.2" fill="#a7d9b0"/><circle cx="16" cy="8" r="4.2" fill="#c9e8cf"/><circle cx="12" cy="15.5" r="4.2" fill="#8cc99a"/></svg>VitiKit</a>
+  <nav class="main">
+    <a href="gdd.html" class="active">GDD Calculator</a><a href="winkler.html">Winkler Zones</a>
+    <a href="spray.html">Spray Mix</a><a href="frost.html">Frost Risk</a>
+    <a href="guides.html">Field Guides</a><a href="about.html">About</a>
+  </nav>
+</div></header>
+
+<article class="prose">
+  <h1>🌡️ Growing Degree Day Accumulator</h1>
+  <p class="meta">Single-sine method · Base 10 °C (50 °F) · Coombe (1995) phenology scale</p>
+
+  <p>Paste daily temperatures below — one line per day, format <code>YYYY-MM-DD,min,max</code>. Export straight from your weather station or any NOAA/Meteomatics CSV. The calculator returns season-total GDD and predicts your current and next phenological stage.</p>
+
+  <div class="panel">
+    <div class="field">
+      <label for="tempdata">Daily temperature data (date,tmin,tmax per line)</label>
+      <textarea id="tempdata" rows="10" style="width:100%;padding:12px;border:1.5px solid var(--line);border-radius:10px;font-family:ui-monospace,Consolas,monospace;font-size:.88rem" placeholder="2026-04-01,4.2,15.8
+2026-04-02,6.1,18.3
+2026-04-03,7.0,21.0
+..."></textarea>
+    </div>
+    <button class="btn" id="calcBtn">Calculate GDD →</button>
+    <div id="out"></div>
+    <p class="note">Tip: no weather station? Free daily data: Open-Meteo API (open-meteo.com), NOAA CLI. The single-sine method (Snyder, 1985) is the viticulture standard — more accurate than averaging on cold nights.</p>
+  </div>
+
+  <blockquote><b>Why it matters:</b> Grapevine development is temperature-driven, not calendar-driven. Flowering at ~250 GDD°C and véraison near 1000 GDD°C let you schedule leaf-pulling, sprays, harvest crews and tank space weeks ahead.</blockquote>
+</article>
+
+<footer class="site"><div class="wrap">
+  <div>© 2026 VitiKit · <a href="index.html">Home</a></div>
+  <div>Methods: Coombe (1995) · Winkler et al. (1974)</div>
+</div></footer>
+
+<script src="assets/vitikit.js"></script>
+<script>
+document.getElementById('calcBtn').addEventListener('click', () => {
+  const raw = document.getElementById('tempdata').value.trim();
+  const out = document.getElementById('out');
+  if (!raw) { out.innerHTML = '<p class="note tag-bad">Paste some data first.</p>'; return; }
+  const rows = [];
+  for (const line of raw.split(/\r?\n/)) {
+    const parts = line.trim().split(/[,\t; ]+/);
+    if (parts.length < 3) continue;
+    const tmin = parseFloat(parts[parts.length - 2]), tmax = parseFloat(parts[parts.length - 1]);
+    if (!isFinite(tmin) || !isFinite(tmax) || tmax < tmin) continue;
+    rows.push({ date: parts[0], tmin, tmax });
+  }
+  if (!rows.length) { out.innerHTML = '<p class="note tag-bad">No valid rows found — expected <code>date,min,max</code> per line.</p>'; return; }
+  const total = VITIKIT.accumulateGDD(rows);
+  // assume accumulation starts from budbreak baseline ~ first row
+  const st = VITIKIT.phenologyStage(total);
+  let html = `<div class="result">
+    <span class="big">${total} GDD°C</span> over ${rows.length} days
+    (${rows[0].date} → ${rows[rows.length-1].date})<br>
+    Current stage: <b>${st.current.stage} (${st.current.zh})</b>`;
+  if (st.next) html += ` · Next: <b>${st.next.stage}</b> in ~${Math.round(st.remaining)} GDD`;
+  html += '</div>';
+  // per-day table (last 7)
+  let tbl = '<table class="tbl"><tr><th>Date</th><th>Tmin</th><th>Tmax</th><th>Daily GDD</th></tr>';
+  const recent = rows.slice(-7);
+  for (const r of recent) tbl += `<tr><td>${r.date}</td><td>${r.tmin}°C</td><td>${r.tmax}°C</td><td>${VITIKIT.gddSingleSine(r.tmin,r.tmax).toFixed(1)}</td></tr>`;
+  tbl += '</table><p class="note">Last 7 days shown.</p>';
+  out.innerHTML = html + tbl;
+});
+</script>
+</body>
+</html>

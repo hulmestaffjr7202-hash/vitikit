@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Winkler Zone Classifier — VitiKit</title>
+<meta name="description" content="Classify your vineyard site into Winkler Regions I–V from season GDD and see which winegrape varieties fit.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="logo" href="index.html"><svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="8" r="4.2" fill="#a7d9b0"/><circle cx="16" cy="8" r="4.2" fill="#c9e8cf"/><circle cx="12" cy="15.5" r="4.2" fill="#8cc99a"/></svg>VitiKit</a>
+  <nav class="main">
+    <a href="gdd.html">GDD Calculator</a><a href="winkler.html" class="active">Winkler Zones</a>
+    <a href="spray.html">Spray Mix</a><a href="frost.html">Frost Risk</a>
+    <a href="guides.html">Field Guides</a><a href="about.html">About</a>
+  </nav>
+</div></header>
+
+<article class="prose">
+  <h1>🗺️ Winkler Climate Zone Classifier</h1>
+  <p class="meta">Winkler & Amerine (1944, rev. 1974) · GDD°C April–Oct (N. Hemisphere)</p>
+
+  <p>Enter your season total growing degree days (April 1 – October 31, base 10°C). Don't know it? Run the <a href="gdd.html">GDD Calculator</a> first.</p>
+
+  <div class="panel">
+    <div class="field">
+      <label for="gddIn">Season GDD (°C, base 10)</label>
+      <input type="number" id="gddIn" placeholder="e.g. 1650" min="0" max="6000">
+    </div>
+    <button class="btn" id="go">Classify →</button>
+    <div id="out"></div>
+  </div>
+
+  <h2>The five zones at a glance</h2>
+  <table class="tbl">
+    <tr><th>Region</th><th>GDD °C</th><th>GDD °F</th><th>Classic varieties</th></tr>
+    <tr><td><b>I</b></td><td>&lt;1390</td><td>&lt;2500</td><td>Riesling, Pinot Noir, Chardonnay (sparkling)</td></tr>
+    <tr><td><b>II</b></td><td>1391–1670</td><td>2501–3000</td><td>Sauvignon Blanc, Chardonnay, Merlot</td></tr>
+    <tr><td><b>III</b></td><td>1671–1940</td><td>3001–3500</td><td>Cabernet Franc, Gewürztraminer, Syrah</td></tr>
+    <tr><td><b>IV</b></td><td>1941–2220</td><td>3501–4000</td><td>Cabernet Sauvignon, Grenache</td></tr>
+    <tr><td><b>V</b></td><td>&gt;2220</td><td>&gt;4000</td><td>Muscat, fortified styles, table grapes</td></tr>
+  </table>
+  <p class="note">Limitations: Winkler zones ignore night temps, rain and soils — treat as a first filter, then refine with site data. Jones et al. (2010) documents global zone shifts under warming.</p>
+</article>
+
+<footer class="site"><div class="wrap">
+  <div>© 2026 VitiKit · <a href="index.html">Home</a></div>
+  <div>Methods: Winkler et al. (1974)</div>
+</div></footer>
+
+<script src="assets/vitikit.js"></script>
+<script>
+document.getElementById('go').addEventListener('click', () => {
+  const v = parseFloat(document.getElementById('gddIn').value);
+  const out = document.getElementById('out');
+  if (!isFinite(v) || v <= 0) { out.innerHTML = '<p class="note tag-bad">Enter a valid GDD number.</p>'; return; }
+  const r = VITIKIT.winklerRegion(v);
+  out.innerHTML = `<div class="result">
+    <span class="big">${r.region}</span> · ${r.zh}<br>${r.desc}<br>
+    <b>Fits:</b> ${r.style.join(' · ')}
+  </div>`;
+});
+</script>
+</body>
+</html>

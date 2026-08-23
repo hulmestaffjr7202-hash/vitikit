@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frost Risk Checker — VitiKit</title>
+<meta name="description" content="Radiative frost risk scoring for vineyards from dewpoint, wind and cloud cover. Protect bud break and bloom.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="logo" href="index.html"><svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="8" r="4.2" fill="#a7d9b0"/><circle cx="16" cy="8" r="4.2" fill="#c9e8cf"/><circle cx="12" cy="15.5" r="4.2" fill="#8cc99a"/></svg>VitiKit</a>
+  <nav class="main">
+    <a href="gdd.html">GDD Calculator</a><a href="winkler.html">Winkler Zones</a>
+    <a href="spray.html">Spray Mix</a><a href="frost.html" class="active">Frost Risk</a>
+    <a href="guides.html">Field Guides</a><a href="about.html">About</a>
+  </nav>
+</div></header>
+
+<article class="prose">
+  <h1>❄️ Frost Risk Checker</h1>
+  <p class="meta">Radiative frost heuristic · Spring protection window: bud break → bloom</p>
+
+  <p>Enter tonight's forecast conditions from your weather app or station:</p>
+
+  <div class="panel">
+    <div class="grid3">
+      <div class="field">
+        <label for="dew">Dewpoint (°C)</label>
+        <input type="number" id="dew" step="0.5" placeholder="e.g. -3">
+      </div>
+      <div class="field">
+        <label for="wind">Wind at dusk (km/h)</label>
+        <input type="number" id="wind" step="1" placeholder="e.g. 5">
+      </div>
+      <div class="field">
+        <label for="cloud">Cloud cover (%)</label>
+        <input type="number" id="cloud" min="0" max="100" placeholder="e.g. 10">
+      </div>
+    </div>
+    <button class="btn" id="go">Assess →</button>
+    <div id="out"></div>
+  </div>
+
+  <blockquote><b>Critical temperatures:</b> after bud break, green shoots die near −1.7 °C (30 min); young clusters are damaged around −1 °C during bloom. A single spring freeze can cost the entire crop.</blockquote>
+
+  <h2>Protection ladder (cheapest first)</h2>
+  <table class="tbl">
+    <tr><th>Method</th><th>Protection</th><th>Cost level</th></tr>
+    <tr><td>Site choice / slope air drainage</td><td>Permanent</td><td>Free (planning)</td></tr>
+    <tr><td>Late pruning / double pruning</td><td>Delays bud break 1–2 weeks</td><td>Labour only</td></tr>
+    <tr><td>Wind machines</td><td>~1–2 °C inversion mixing</td><td>$$</td></tr>
+    <tr><td>Overhead sprinklers (icing)</td><td>To ~−5 °C while water flows</td><td>$$$ (water + pump)</td></tr>
+    <tr><td>Helicopters</td><td>Emergency inversion mix</td><td>$$$$ per event</td></tr>
+  </table>
+</article>
+
+<footer class="site"><div class="wrap">
+  <div>© 2026 VitiKit · <a href="index.html">Home</a></div>
+  <div>Educational heuristic — always verify with on-site sensors</div>
+</div></footer>
+
+<script src="assets/vitikit.js"></script>
+<script>
+document.getElementById('go').addEventListener('click', () => {
+  const d = parseFloat(document.getElementById('dew').value);
+  const w = parseFloat(document.getElementById('wind').value);
+  const c = parseFloat(document.getElementById('cloud').value);
+  const out = document.getElementById('out');
+  if (![d,w,c].every(isFinite)) { out.innerHTML = '<p class="note tag-bad">Fill in all three fields.</p>'; return; }
+  const r = VITIKIT.frostRisk(d, w, c);
+  out.innerHTML = `<div class="result">
+    Risk tonight: <span class="big tag-${r.level==='HIGH'?'bad':r.level==='MODERATE'?'warn':'ok'}">${r.level} (${r.zh})</span><br>${r.advice}
+  </div>`;
+});
+</script>
+</body>
+</html>

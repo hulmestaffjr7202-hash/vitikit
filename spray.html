@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spray Tank Mixer — VitiKit</title>
+<meta name="description" content="Convert pesticide and fungicide label rates into exact product amounts for your spray tank. Vineyard spray calculator.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="logo" href="index.html"><svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="8" r="4.2" fill="#a7d9b0"/><circle cx="16" cy="8" r="4.2" fill="#c9e8cf"/><circle cx="12" cy="15.5" r="4.2" fill="#8cc99a"/></svg>VitiKit</a>
+  <nav class="main">
+    <a href="gdd.html">GDD Calculator</a><a href="winkler.html">Winkler Zones</a>
+    <a href="spray.html" class="active">Spray Mix</a><a href="frost.html">Frost Risk</a>
+    <a href="guides.html">Field Guides</a><a href="about.html">About</a>
+  </nav>
+</div></header>
+
+<article class="prose">
+  <h1>🧴 Spray Tank Mixer</h1>
+  <p class="meta">Label rate → product per tank · Always follow the product label — it is the law</p>
+
+  <div class="panel">
+    <div class="grid2">
+      <div class="field">
+        <label for="tankL">Tank size (litres)</label>
+        <input type="number" id="tankL" placeholder="e.g. 400">
+      </div>
+      <div class="field">
+        <label for="rate">Label rate (mL or g per 100 L water)</label>
+        <input type="number" id="rate" placeholder="e.g. 150" step="0.1">
+      </div>
+      <div class="field">
+        <label for="density">Product density (g/mL, optional — liquids ≈ 1.0)</label>
+        <input type="number" id="density" placeholder="1.0" step="0.01" value="1.0">
+      </div>
+      <div class="field">
+        <label for="areaHa">Area to treat (ha, optional — for total needed)</label>
+        <input type="number" id="areaHa" placeholder="e.g. 2.5" step="0.1">
+      </div>
+    </div>
+    <button class="btn" id="go">Mix →</button>
+    <div id="out"></div>
+  </div>
+
+  <blockquote><b>Safety:</b> Read the label every time. Respect re-entry intervals (REI) and pre-harvest intervals (PHI). Wear the PPE listed. In the EU/US, maximum residues apply — see your local MRL database.</blockquote>
+
+  <h2>Common vineyard spray windows</h2>
+  <table class="tbl">
+    <tr><th>Growth stage</th><th>Typical target</th><th>Notes</th></tr>
+    <tr><td>Bud break</td><td>Phomopsis, anthracnose</td><td>First cover when 3–5 leaves unfolded</td></tr>
+    <tr><td>Pre-bloom → bloom</td><td><b>Powdery mildew (critical)</b>, downy mildew</td><td>Tightest interval of the year; rotate FRAC groups</td></tr>
+    <tr><td>Post-set → bunch closure</td><td>Downy mildew, black rot, botrytis</td><td>Cover the inside of the canopy</td></tr>
+    <tr><td>Véraison → harvest</td><td>Botrytis, sour rot</td><td>Mind PHI on every product</td></tr>
+  </table>
+</article>
+
+<footer class="site"><div class="wrap">
+  <div>© 2026 VitiKit · <a href="index.html">Home</a></div>
+  <div>Educational tool — the label is legally authoritative</div>
+</div></footer>
+
+<script src="assets/vitikit.js"></script>
+<script>
+document.getElementById('go').addEventListener('click', () => {
+  const tankL = parseFloat(document.getElementById('tankL').value);
+  const rate = parseFloat(document.getElementById('rate').value);
+  const dens = parseFloat(document.getElementById('density').value) || 1;
+  const ha = parseFloat(document.getElementById('areaHa').value);
+  const out = document.getElementById('out');
+  if (!(tankL > 0 && rate > 0)) { out.innerHTML = '<p class="note tag-bad">Tank size and label rate are required.</p>'; return; }
+  const m = VITIKIT.sprayMix({ tankL, ratePer100L: rate, productDensityGL: dens * 1000 });
+  let html = `<div class="result">
+    Add <span class="big">${m.productMl} mL</span> product to ${tankL} L water<br>`;
+  if (m.productGrams !== m.productMl) html += `≈ ${m.productGrams} g by weight<br>`;
+  if (ha > 0) {
+    // assume ~1000 L/ha standard dilution volume
+    const totalTanks = Math.ceil(ha * 1000 / tankL);
+    html += `For ${ha} ha at ~1000 L/ha: buy/mix for <b>${totalTanks} full tanks</b> (${(rate*10*ha/1000).toFixed(1)} L total product).<br>`;
+  }
+  html += '</div>';
+  out.innerHTML = html;
+});
+</script>
+</body>
+</html>
