@@ -24,6 +24,28 @@
   <p>Paste daily temperatures below — one line per day, format <code>YYYY-MM-DD,min,max</code>. Export straight from your weather station or any NOAA/Meteomatics CSV. The calculator returns season-total GDD and predicts your current and next phenological stage.</p>
 
   <div class="panel">
+    <h3>⚡ Auto-fetch weather (new)</h3>
+    <p class="hint">Type a place name or paste coordinates — we pull real daily temperatures from Open-Meteo and fill the box below. No API key needed.</p>
+    <div class="grid3">
+      <div class="field">
+        <label for="place">Location (name or "lat,lon")</label>
+        <input type="text" id="place" placeholder='e.g. "Napa, CA" or "38.3,-122.3"'>
+      </div>
+      <div class="field">
+        <label for="startDate">Start date</label>
+        <input type="date" id="startDate">
+      </div>
+      <div class="field">
+        <label for="endDate">End date</label>
+        <input type="date" id="endDate">
+      </div>
+    </div>
+    <button class="btn gold" id="fetchBtn">Fetch weather &amp; calculate →</button>
+    <div id="fetchOut"></div>
+  </div>
+
+  <div class="panel">
+    <h3>📋 Or paste your own data</h3>
     <div class="field">
       <label for="tempdata">Daily temperature data (date,tmin,tmax per line)</label>
       <textarea id="tempdata" rows="10" style="width:100%;padding:12px;border:1.5px solid var(--line);border-radius:10px;font-family:ui-monospace,Consolas,monospace;font-size:.88rem" placeholder="2026-04-01,4.2,15.8
@@ -75,6 +97,115 @@ document.getElementById('calcBtn').addEventListener('click', () => {
   tbl += '</table><p class="note">Last 7 days shown.</p>';
   out.innerHTML = html + tbl;
 });
+
+// ===== v1.1: Open-Meteo auto-fetch =====
+// 把计算逻辑抽成共享函数
+function renderGddResult(rows, out, label) {
+  const total = VITIKIT.accumulateGDD(rows);
+  const st = VITIKIT.phenologyStage(total);
+  let html = `<div class="result">
+    ${label ? label + '<br>' : ''}
+    <span class="big">${total} GDD°C</span> over ${rows.length} days
+    (${rows[0].date} → ${rows[rows.length-1].date})<br>
+    Current stage: <b>${st.current.stage} (${st.current.zh})</b>`;
+  if (st.next) html += ` · Next: <b>${st.next.stage}</b> in ~${Math.round(st.remaining)} GDD`;
+  const wr = VITIKIT.winklerRegion(total);
+  html += `<br><span style="font-size:.85rem;color:var(--muted)">Winkler estimate (if full season): <b>${wr.region}</b></span>`;
+  html += '</div>';
+  let tbl = '<table class="tbl"><tr><th>Date</th><th>Tmin</th><th>Tmax</th><th>Daily GDD</th></tr>';
+  for (const r of rows.slice(-7)) tbl += `<tr><td>${r.date}</td><td>${r.tmin}°C</td><td>${r.tmax}°C</td><td>${VITIKIT.gddSingleSine(r.tmin,r.tmax).toFixed(1)}</td></tr>`;
+  tbl += '</table><p class="note">Last 7 days shown.</p>';
+  out.innerHTML = html + tbl;
+}
+
+document.getElementById('calcBtn').addEventListener('click', () => {
+  const raw = document.getElementById('tempdata').value.trim();
+  const out = document.getElementById('out');
+  if (!raw) { out.innerHTML = '<p class="note tag-bad">Paste some data first.</p>'; return; }
+  const rows = [];
+  for (const line of raw.split(/\r?\n/)) {
+    const parts = line.trim().split(/[,\t; ]+/);
+    if (parts.length < 3) continue;
+    const tmin = parseFloat(parts[parts.length - 2]), tmax = parseFloat(parts[parts.length - 1]);
+    if (!isFinite(tmin) || !isFinite(tmax) || tmax < tmin) continue;
+    rows.push({ date: parts[0], tmin, tmax });
+  }
+  if (!rows.length) { out.innerHTML = '<p class="note tag-bad">No valid rows found — expected <code>date,min,max</code> per line.</p>'; return; }
+  renderGddResult(rows, out, '');
+});
+
+const fetchOut = document.getElementById('fetchOut');
+const fetchBtn = document.getElementById('fetchBtn');
+
+async function resolveLocation(q) {
+  // "lat,lon" 直接用
+  const m = q.match(/^\s*(-?\d+(?:\.\d+)?)\s*[, ]\s*(-?\d+(?:\.\d+)?)\s*$/);
+  if (m) {
+    const lat = parseFloat(m[1]), lon = parseFloat(m[2]);
+    if (Math.abs(lat) <= 90 && Math.abs(lon) <= 180) return { lat, lon, name: `${lat}, ${lon}` };
+  }
+  // 地名 → geocoding
+  const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=1&language=en&format=json`;
+  const gres = await fetch(geoUrl);
+  if (!gres.ok) throw new Error('Geocoding service unavailable');
+  const gj = await gres.json();
+  if (!gj.results || !gj.results.length) throw new Error(`Place "${q}" not found — try coordinates like "38.3,-122.3"`);
+  const r0 = gj.results[0];
+  return { lat: r0.latitude, lon: r0.longitude,
+           name: [r0.name, r0.admin1, r0.country].filter(Boolean).join(', ') };
+}
+
+fetchBtn.addEventListener('click', async () => {
+  const q = document.getElementById('place').value.trim();
+  const s = document.getElementById('startDate').value;
+  const e = document.getElementById('endDate').value;
+  if (!q) { fetchOut.innerHTML = '<p class="note tag-bad">Enter a location first.</p>'; return; }
+  if (!s || !e) { fetchOut.innerHTML = '<p class="note tag-bad">Pick both dates.</p>'; return; }
+  if (new Date(s) >= new Date(e)) { fetchOut.innerHTML = '<p class="note tag-bad">End date must be after start date.</p>'; return; }
+
+  fetchBtn.disabled = true;
+  fetchOut.innerHTML = '<p class="note">⏳ Resolving location…</p>';
+  try {
+    const loc = await resolveLocation(q);
+    fetchOut.innerHTML = `<p class="note">⏳ Found <b>${loc.name}</b> — fetching daily temperatures…</p>`;
+
+    const apiUrl = `https://archive-api.open-meteo.com/v1/archive?latitude=${loc.lat}&longitude=${loc.lon}` +
+      `&start_date=${s}&end_date=${e}&daily=temperature_2m_max,temperature_2m_min&timezone=auto`;
+    const wres = await fetch(apiUrl);
+    if (!wres.ok) throw new Error('Weather archive unavailable (historical data goes back to 1940)');
+    const wj = await wres.json();
+
+    const rows = [];
+    const times = wj.daily.time, tmax = wj.daily.temperature_2m_max, tmin = wj.daily.temperature_2m_min;
+    for (let i = 0; i < times.length; i++) {
+      if (!isFinite(tmin[i]) || !isFinite(tmax[i])) continue;
+      rows.push({ date: times[i], tmin: tmin[i], tmax: tmax[i] });
+    }
+    if (rows.length < 2) { fetchOut.innerHTML = '<p class="note tag-bad">Not enough data returned for that range.</p>'; return; }
+
+    // 回填到手动框，方便用户复用/修改
+    document.getElementById('tempdata').value =
+      rows.map(r => `${r.date},${r.tmin},${r.tmax}`).join('\n');
+
+    renderGddResult(rows, fetchOut, `📍 <b>${loc.name}</b> (${loc.lat.toFixed(2)}, ${loc.lon.toFixed(2)})`);
+  } catch (err) {
+    fetchOut.innerHTML = `<p class="note tag-bad">${err.message.replace(/</g,'&lt;')}</p>`;
+  } finally {
+    fetchBtn.disabled = false;
+  }
+});
+
+// 默认日期：当年4月1日 → 今天（数据源是历史档案，若今天非整年则用户自行调整）
+(function initDates() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const apr1 = `${y}-04-01`;
+  const today = now.toISOString().slice(0, 10);
+  // 历史档案有 ~5 天延迟，回退到5天前
+  const safeEnd = new Date(now - 6 * 86400000).toISOString().slice(0, 10);
+  document.getElementById('startDate').value = apr1;
+  document.getElementById('endDate').value = (now - new Date(y,3,1)) > 6*86400000 ? safeEnd : today;
+})();
 </script>
 </body>
 </html>
