@@ -99,6 +99,12 @@ document.getElementById('calcBtn').addEventListener('click', () => {
 });
 
 // ===== v1.1: Open-Meteo auto-fetch =====
+// 支持 ?loc=lat,lon 预填（来自产区页链接）
+(function initFromQuery() {
+  const q = new URLSearchParams(location.search).get('loc');
+  if (q) document.getElementById('place').value = q;
+})();
+
 // 把计算逻辑抽成共享函数
 function renderGddResult(rows, out, label) {
   const total = VITIKIT.accumulateGDD(rows);
@@ -207,5 +213,6 @@ fetchBtn.addEventListener('click', async () => {
   document.getElementById('endDate').value = (now - new Date(y,3,1)) > 6*86400000 ? safeEnd : today;
 })();
 </script>
+<script src="assets/theme.js"></script>
 </body>
 </html>
