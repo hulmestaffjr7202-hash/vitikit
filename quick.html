@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quick Tools — VitiKit</title>
+<meta name="description" content="Unit converter, critical temperature chart, and variety quick reference for winegrape growers.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="logo" href="index.html"><svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="8" r="4.2" fill="#a7d9b0"/><circle cx="16" cy="8" r="4.2" fill="#c9e8cf"/><circle cx="12" cy="15.5" r="4.2" fill="#8cc99a"/></svg>VitiKit</a>
+  <nav class="main">
+    <a href="gdd.html">GDD Calculator</a><a href="winkler.html">Winkler Zones</a>
+    <a href="spray.html">Spray Mix</a><a href="frost.html">Frost Risk</a>
+    <a href="spraylog.html">Spray Records</a>
+    <a href="quick.html" class="active">Quick Tools</a>
+    <a href="guides.html">Field Guides</a><a href="about.html">About</a>
+  </nav>
+</div></header>
+
+<article class="prose" style="max-width:820px">
+  <h1>🧰 Quick Tools</h1>
+  <p class="meta">Small utilities growers reach for daily</p>
+
+  <!-- 单位换算 -->
+  <div class="panel">
+    <h3>🔄 Unit Converter</h3>
+    <p class="hint">The conversions labels love to make you do in your head.</p>
+    <div class="grid2">
+      <div class="field">
+        <label>Value</label>
+        <input type="number" id="convVal" step="any" value="100">
+      </div>
+      <div class="field">
+        <label>Conversion</label>
+        <select id="convType">
+          <option value="c2f">°C → °F</option>
+          <option value="f2c">°F → °C</option>
+          <option value="l2gal">Litres → US gallons</option>
+          <option value="gal2l">US gallons → Litres</option>
+          <option value="ha2ac">Hectares → Acres</option>
+          <option value="ac2ha">Acres → Hectares</option>
+          <option value="kgh2lba">kg/ha → lb/acre</option>
+          <option value="lba2kgh">lb/acre → kg/ha</option>
+          <option value="ml2oz">mL → US fl oz</option>
+          <option value="bar2psi">bar → psi</option>
+        </select>
+      </div>
+    </div>
+    <div class="result" id="convOut"><span class="big">—</span></div>
+  </div>
+
+  <!-- 临界温度 -->
+  <div class="panel">
+    <h3>🌡️ Critical Damage Temperatures</h3>
+    <p class="hint">Approximate LT₅₀ (temp killing 50% of tissue, 30 min exposure). Source: Poling (2008), USDA.</p>
+    <table class="tbl">
+      <tr><th>Stage</th><th>LT₁₀</th><th>LT₅₀</th><th>LT₉₀</th></tr>
+      <tr><td>Dormant bud</td><td>—</td><td>&lt; −15 °C (5 °F)</td><td>—</td></tr>
+      <tr><td>Bud swell</td><td>−3.9 °C</td><td>−6.7 °C</td><td>−9.4 °C</td></tr>
+      <tr><td>Green shoot (1–3")</td><td>−2.2 °C</td><td>−3.9 °C</td><td>−5.6 °C</td></tr>
+      <tr><td>Expanded shoot (4–10")</td><td>−1.7 °C</td><td>−2.8 °C</td><td>−3.9 °C</td></tr>
+      <tr><td>Flower cluster</td><td>−1.1 °C</td><td>−2.2 °C</td><td>−2.8 °C</td></tr>
+      <tr><td>Young berries</td><td>−0.6 °C</td><td>−1.7 °C</td><td>−2.2 °C</td></tr>
+    </table>
+    <p class="note">Rule of thumb after bud break: green tissue dies near −2 °C. Our <a href="frost.html">Frost Risk Checker</a> scores tonight's radiative danger.</p>
+  </div>
+
+  <!-- 品种速查 -->
+  <div class="panel">
+    <h3>🍇 Variety Ripening Quick Reference</h3>
+    <p class="hint">Relative ripening order (early → late) with typical Winkler zone fit.</p>
+    <table class="tbl">
+      <tr><th>Window</th><th>Variety</th><th>Best zones</th></tr>
+      <tr><td rowspan="3">Very early</td><td>Chardonnay (sparkling)</td><td>I – II</td></tr>
+      <tr><td>Müller-Thurgau</td><td>I</td></tr>
+      <tr><td>Sauvignon Blanc</td><td>II</td></tr>
+      <tr><td rowspan="3">Early–mid</td><td>Pinot Noir</td><td>I – II</td></tr>
+      <tr><td>Gewürztraminer</td><td>II – III</td></tr>
+      <tr><td>Merlot</td><td>II – III</td></tr>
+      <tr><td rowspan="3">Mid–late</td><td>Syrah</td><td>III – IV</td></tr>
+      <tr><td>Cabernet Franc</td><td>III</td></tr>
+      <tr><td>Sangiovese</td><td>III – IV</td></tr>
+      <tr><td rowspan="3">Late</td><td>Cabernet Sauvignon</td><td>IV</td></tr>
+      <tr><td>Grenache</td><td>IV</td></tr>
+      <tr><td>Petit Verdot</td><td>IV – V</td></tr>
+    </table>
+    <p class="note">Classify your site first with the <a href="winkler.html">Winkler Classifier</a>.</p>
+  </div>
+
+  <!-- TA/pH 参考 -->
+  <div class="panel">
+    <h3>🧪 Harvest Ripeness Benchmarks</h3>
+    <p class="hint">Typical harvest windows for still wine (varies by style & region).</p>
+    <table class="tbl">
+      <tr><th>Wine style</th><th>°Brix</th><th>pH</th><th>TA (g/L)</th></tr>
+      <tr><td>Sparkling base</td><td>17 – 19</td><td>2.9 – 3.1</td><td>10 – 13</td></tr>
+      <tr><td>White (dry)</td><td>20 – 23</td><td>3.1 – 3.3</td><td>6 – 9</td></tr>
+      <tr><td>Rosé</td><td>20 – 22</td><td>3.1 – 3.3</td><td>6 – 9</td></tr>
+      <tr><td>Red (light)</td><td>21 – 24</td><td>3.3 – 3.5</td><td>5 – 8</td></tr>
+      <tr><td>Red (full-bodied)</td><td>23 – 26</td><td>3.4 – 3.7</td><td>4.5 – 7</td></tr>
+    </table>
+  </div>
+</article>
+
+<footer class="site"><div class="wrap">
+  <div>© 2026 VitiKit · <a href="index.html">Home</a></div>
+  <div>Educational reference — verify with your own lab data</div>
+</div></footer>
+
+<script>
+// 单位换算
+const CONV = {
+  c2f:  { fn: v => v * 9/5 + 32,        unit: '°F',  dec: 1 },
+  f2c:  { fn: v => (v - 32) * 5/9,      unit: '°C',  dec: 1 },
+  l2gal:{ fn: v => v / 3.78541,         unit: 'gal', dec: 2 },
+  gal2l:{ fn: v => v * 3.78541,         unit: 'L',   dec: 2 },
+  ha2ac:{ fn: v => v * 2.47105,         unit: 'ac',  dec: 2 },
+  ac2ha:{ fn: v => v / 2.47105,         unit: 'ha',  dec: 2 },
+  kgh2lba:{ fn: v => v * 0.892178,      unit: 'lb/ac', dec: 2 },
+  lba2kgh:{ fn: v => v / 0.892178,      unit: 'kg/ha', dec: 2 },
+  ml2oz:{ fn: v => v / 29.5735,         unit: 'fl oz', dec: 2 },
+  bar2psi:{ fn: v => v * 14.5038,       unit: 'psi', dec: 1 }
+};
+const cv = document.getElementById('convVal'), ct = document.getElementById('convType'), co = document.getElementById('convOut');
+function doConv() {
+  const v = parseFloat(cv.value);
+  if (!isFinite(v)) { co.innerHTML = '<span class="big">—</span>'; return; }
+  const c = CONV[ct.value];
+  co.innerHTML = `<span class="big">${c.fn(v).toFixed(c.dec)} ${c.unit}</span>`;
+}
+cv.addEventListener('input', doConv);
+ct.addEventListener('change', doConv);
+doConv();
+</script>
+</body>
+</html>
