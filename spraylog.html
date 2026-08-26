@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spray Record Generator — VitiKit Pro</title>
+<meta name="description" content="Generate regulation-ready vineyard spray application records as PDF. Free trial, Pro unlimited.">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .lic-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+  .lic-status{font-size:.82rem;padding:5px 13px;border-radius:99px;font-weight:600}
+  .lic-status.pro{background:#e8f5e9;color:#248a3d}
+  .lic-status.free{background:#f5f5f7;color:var(--muted)}
+  .paywall{background:linear-gradient(145deg,#1d1d1f,#2c2c2e);color:#fff;border-radius:var(--radius-m);
+    padding:28px;margin-top:18px;text-align:center}
+  .paywall h4{font-size:1.15rem;margin-bottom:6px}
+  .paywall p{color:rgba(255,255,255,.65);font-size:.88rem;margin-bottom:16px}
+  .paywall .price{font-size:2rem;font-weight:800;letter-spacing:-.02em;margin:8px 0}
+  .paywall .price small{font-size:.9rem;font-weight:500;opacity:.6}
+  .paywall a{background:#fff;color:var(--ink);padding:11px 30px;border-radius:99px;font-weight:600;
+    display:inline-block;text-decoration:none;transition:.25s}
+  .paywall a:hover{transform:scale(1.04)}
+  .lic-input{display:flex;gap:10px;margin-top:14px;justify-content:center}
+  .lic-input input{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.2);
+    border-radius:99px;padding:10px 18px;font-size:.9rem;width:240px;text-align:center}
+  .lic-input input::placeholder{color:rgba(255,255,255,.4)}
+  .lic-input button{background:var(--vine);color:#fff;border:none;border-radius:99px;padding:10px 22px;
+    font-weight:600;cursor:pointer}
+  .ok-msg{color:#248a3d;font-weight:600;font-size:.85rem;margin-top:10px}
+  .err-msg{color:var(--danger);font-weight:600;font-size:.85rem;margin-top:10px}
+</style>
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="logo" href="index.html"><svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="8" r="4.2" fill="#a7d9b0"/><circle cx="16" cy="8" r="4.2" fill="#c9e8cf"/><circle cx="12" cy="15.5" r="4.2" fill="#8cc99a"/></svg>VitiKit</a>
+  <nav class="main">
+    <a href="gdd.html">GDD Calculator</a><a href="winkler.html">Winkler Zones</a>
+    <a href="spray.html">Spray Mix</a><a href="frost.html">Frost Risk</a>
+    <a href="spraylog.html" class="active">Spray Records</a>
+    <a href="guides.html">Field Guides</a><a href="about.html">About</a>
+  </nav>
+</div></header>
+
+<article class="prose" style="max-width:820px">
+  <h1>🧾 Spray Record Generator</h1>
+  <p class="meta">Regulation-ready PDF application records · Free: 3 records · Pro: unlimited</p>
+
+  <div class="panel">
+    <div class="lic-row">
+      <span id="licStatus" class="lic-status free">Free trial — 3 remaining</span>
+      <span style="color:var(--muted);font-size:.8rem">Records are generated locally in your browser. Nothing is uploaded.</span>
+    </div>
+
+    <div class="grid2">
+      <div class="field"><label>Farm / Vineyard name *</label><input id="f_farm" placeholder="e.g. Sunridge Vineyards"></div>
+      <div class="field"><label>Block *</label><input id="f_block" placeholder="e.g. Block 3 — Chardonnay"></div>
+      <div class="field"><label>Date of application *</label><input type="date" id="f_date"></div>
+      <div class="field"><label>Area treated (ha) *</label><input type="number" step="0.1" id="f_areaHa" placeholder="2.5"></div>
+      <div class="field"><label>Target pest / disease</label><input id="f_target" placeholder="e.g. Powdery mildew"></div>
+      <div class="field"><label>Product name *</label><input id="f_product" placeholder="e.g. Vendex 50WP"></div>
+      <div class="field"><label>EPA / Registration No.</label><input id="f_epaNo" placeholder="optional"></div>
+      <div class="field"><label>Label rate *</label><input type="number" step="0.1" id="f_rate" placeholder="150"><input type="text" id="f_rateUnit" placeholder="mL/100L" style="margin-top:8px"></div>
+      <div class="field"><label>Water volume (L/ha) *</label><input type="number" id="f_waterL" placeholder="1000"></div>
+      <div class="field"><label>REI (hours)</label><input type="number" id="f_rei" placeholder="24"></div>
+      <div class="field"><label>PHI (days)</label><input type="number" id="f_phi" placeholder="30"></div>
+      <div class="field"><label>Applicator</label><input id="f_applicator" placeholder="name"></div>
+      <div class="field"><label>Equipment</label><input id="f_equipment" placeholder="e.g. Air-blast sprayer"></div>
+      <div class="field"><label>Wind (km/h) / Temp (°C)</label>
+        <div style="display:flex;gap:8px">
+          <input type="number" id="f_wind" placeholder="wind">
+          <input type="number" id="f_temp" placeholder="temp">
+        </div></div>
+    </div>
+    <div class="field"><label>Notes</label><input id="f_notes" placeholder="conditions, observations…"></div>
+
+    <button class="btn" id="genBtn">Generate PDF Record →</button>
+    <div id="genOut"></div>
+  </div>
+
+  <div class="paywall" id="paywallBox">
+    <h4>VitiKit Pro</h4>
+    <div class="price">$29<small> / season</small></div>
+    <p>Unlimited PDF spray records · Custom farm branding · Priority support.<br>
+    One license key, works offline, keeps your data on your device.</p>
+    <a href="https://vitikit.gumroad.com/l/pro" target="_blank" rel="noopener">Buy Pro — $29</a>
+    <div class="lic-input">
+      <input id="licKey" placeholder="Paste license key (VK-XXXXXXXXXXXX)">
+      <button id="licBtn">Activate</button>
+    </div>
+    <div id="licMsg"></div>
+    <p style="margin-top:14px;font-size:.75rem;opacity:.5">Payment via Gumroad · 30-day money-back guarantee</p>
+  </div>
+</article>
+
+<footer class="site"><div class="wrap">
+  <div>© 2026 VitiKit · <a href="index.html">Home</a></div>
+  <div>The label is legally authoritative — always follow it</div>
+</div></footer>
+
+<script src="assets/vitikit.js"></script>
+<script src="assets/spraylog.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const genOut = $('genOut');
+
+function refreshLicenseUI() {
+  const st = $('licStatus');
+  if (SprayLog.isPro()) {
+    st.textContent = 'Pro activated — unlimited records';
+    st.className = 'lic-status pro';
+    $('paywallBox').style.display = 'none';
+  } else {
+    st.textContent = `Free trial — ${SprayLog.remaining()} of 3 remaining`;
+  }
+}
+
+$('genBtn').addEventListener('click', () => {
+  const r = {
+    farm: $('f_farm').value.trim(), block: $('f_block').value.trim(),
+    date: $('f_date').value, areaHa: $('f_areaHa').value,
+    target: $('f_target').value.trim(), product: $('f_product').value.trim(),
+    epaNo: $('f_epaNo').value.trim(), rate: $('f_rate').value,
+    rateUnit: $('f_rateUnit').value.trim(), waterL: $('f_waterL').value,
+    rei: $('f_rei').value, phi: $('f_phi').value,
+    applicator: $('f_applicator').value.trim(), equipment: $('f_equipment').value.trim(),
+    wind: $('f_wind').value, temp: $('f_temp').value, notes: $('f_notes').value.trim()
+  };
+  const res = SprayLog.exportPDF(r);
+  if (res.ok) {
+    genOut.innerHTML = `<p class="ok-msg">✓ Record generated & print dialog opened. ${SprayLog.isPro() ? '' : res.remaining + ' free records remaining.'}</p>`;
+  } else if (res.paywall) {
+    genOut.innerHTML = `<p class="err-msg">Free trial used up — upgrade to Pro below for unlimited records.</p>`;
+    $('paywallBox').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } else if (res.missing) {
+    genOut.innerHTML = `<p class="err-msg">Missing required fields: ${res.missing.join(', ')}</p>`;
+  } else {
+    genOut.innerHTML = `<p class="err-msg">${res.error || 'Failed'}</p>`;
+  }
+  refreshLicenseUI();
+});
+
+$('licBtn').addEventListener('click', () => {
+  const key = $('licKey').value;
+  if (SprayLog.activatePro(key)) {
+    $('licMsg').innerHTML = '<p class="ok-msg">✓ Pro activated — thank you for supporting VitiKit!</p>';
+    refreshLicenseUI();
+  } else {
+    $('licMsg').innerHTML = '<p class="err-msg">Invalid key format. Check your Gumroad receipt.</p>';
+  }
+});
+
+// 默认今天
+$('f_date').value = new Date().toISOString().slice(0, 10);
+refreshLicenseUI();
+</script>
+</body>
+</html>
