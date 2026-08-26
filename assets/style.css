@@ -1,89 +1,158 @@
-/* ===== VitiKit design system ===== */
+/* ============================================================
+   VitiKit Design System — Apple-inspired (SF style)
+   大留白 · 细腻层级 · 柔和玻璃质感 · 精确字阶
+   ============================================================ */
 :root{
-  --paper:#faf9f5; --card:#ffffff; --ink:#22301f; --muted:#6b7a64;
-  --vine:#2e6b41; --vine-dark:#1e4a2c; --gold:#c9a227; --line:#e4e2d8;
-  --danger:#b3423a; --info:#33628c;
+  /* 色彩：中性灰阶为主，绿色仅作强调 */
+  --bg:#f5f5f7;               /* Apple 标志性浅灰背景 */
+  --card:#ffffff;
+  --card-2:#fbfbfd;
+  --ink:#1d1d1f;              /* 近黑，Apple 文本色 */
+  --ink-2:#424245;
+  --muted:#86868b;            /* Apple 次级文本灰 */
+  --line:rgba(0,0,0,.08);
+  --vine:#0071e3;             /* Apple 蓝（链接/主按钮）*/
+  --vine-dark:#0058b9;
+  --green:#34c759;            /* iOS 系统绿（点缀）*/
+  --gold:#ff9f0a;             /* iOS 橙（警示点缀）*/
+  --danger:#ff3b30;           /* iOS 红 */
+  --info:#007aff;
+
+  --radius-l:22px;
+  --radius-m:14px;
+  --radius-s:9px;
+
+  --shadow-card:0 2px 12px rgba(0,0,0,.04), 0 8px 28px rgba(0,0,0,.05);
+  --shadow-card-hover:0 4px 16px rgba(0,0,0,.06), 0 14px 40px rgba(0,0,0,.09);
+
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+  --font-display:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,"PingFang SC",sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:-apple-system,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
-  background:var(--paper);color:var(--ink);line-height:1.65}
-a{color:var(--vine)}
-.wrap{max-width:1060px;margin:0 auto;padding:0 20px}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);line-height:1.58;font-size:16px}
+a{color:var(--vine);text-decoration:none}
+a:hover{text-decoration:none;opacity:.85}
+::selection{background:rgba(0,113,227,.18)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
 
-/* header */
-header.site{background:linear-gradient(135deg,var(--vine-dark),var(--vine));color:#fff;padding:18px 0;position:sticky;top:0;z-index:50;box-shadow:0 2px 12px rgba(30,74,44,.25)}
-header.site .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.25rem;letter-spacing:.3px;text-decoration:none;color:#fff}
-.logo svg{width:30px;height:30px}
-nav.main{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
-nav.main a{color:#dff0e2;text-decoration:none;font-size:.92rem;padding:7px 12px;border-radius:8px;font-weight:600}
-nav.main a:hover{background:rgba(255,255,255,.14);color:#fff}
-nav.main a.active{background:rgba(255,255,255,.2);color:#fff}
+/* ===== 顶栏：毛玻璃吸顶 ===== */
+header.site{
+  position:sticky;top:0;z-index:100;
+  background:rgba(251,251,253,.72);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:1px solid var(--line);
+  padding:14px 0;
+}
+header.site .wrap{display:flex;align-items:center;gap:10px}
+.logo{display:flex;align-items:center;gap:9px;font-family:var(--font-display);
+  font-weight:700;font-size:1.22rem;letter-spacing:-.02em;color:var(--ink)}
+.logo svg{width:26px;height:26px}
+nav.main{margin-left:auto;display:flex;gap:2px;flex-wrap:wrap}
+nav.main a{color:var(--ink-2);font-size:.88rem;font-weight:500;padding:6px 13px;border-radius:99px;
+  transition:.2s}
+nav.main a:hover{background:rgba(0,0,0,.05);opacity:1;color:var(--ink)}
+nav.main a.active{background:var(--ink);color:#fff}
 
-/* hero */
-.hero{padding:52px 0 34px;text-align:center;background:
- radial-gradient(1000px 320px at 50% -80px,rgba(201,162,39,.16),transparent),var(--paper)}
-.hero h1{font-size:clamp(1.7rem,4vw,2.6rem);font-weight:900;line-height:1.2}
-.hero h1 em{color:var(--vine);font-style:normal;border-bottom:4px solid var(--gold)}
-.hero p.sub{max-width:640px;margin:14px auto 0;color:var(--muted);font-size:1.02rem}
-.badge-row{display:flex;gap:8px;justify-content:center;margin-top:18px;flex-wrap:wrap}
-.badge{font-size:.78rem;font-weight:700;padding:4px 11px;border-radius:99px;background:#edf3ea;color:var(--vine-dark);border:1px solid var(--line)}
+/* ===== Hero：超大标题 + 克制副文案 ===== */
+.hero{padding:88px 0 56px;text-align:center}
+.hero h1{font-family:var(--font-display);font-size:clamp(2.4rem,6vw,4.2rem);font-weight:800;
+  letter-spacing:-.03em;line-height:1.07;color:var(--ink)}
+.hero h1 em{font-style:normal;color:var(--muted)}  /* Apple 式灰色强调 */
+.hero p.sub{max-width:600px;margin:20px auto 0;color:var(--muted);font-size:1.15rem;line-height:1.5;font-weight:400}
+.badge-row{display:flex;gap:10px;justify-content:center;margin-top:26px;flex-wrap:wrap}
+.badge{font-size:.8rem;font-weight:500;padding:6px 14px;border-radius:99px;
+  background:#fff;color:var(--ink-2);border:1px solid var(--line)}
 
-/* tool cards */
-.tools-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;padding:26px 0 10px}
-.tcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;text-decoration:none;color:var(--ink);
- transition:.18s;display:flex;flex-direction:column;gap:8px;box-shadow:0 1px 3px rgba(34,48,31,.05)}
-.tcard:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(30,74,44,.13);border-color:var(--vine)}
-.tcard .ico{width:42px;height:42px;border-radius:11px;background:#eef4ec;display:flex;align-items:center;justify-content:center;font-size:1.35rem}
-.tcard h3{font-size:1.05rem}
-.tcard p{color:var(--muted);font-size:.88rem;flex:1}
-.tcard .go{color:var(--vine);font-weight:700;font-size:.86rem}
+/* ===== 工具卡片 ===== */
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;padding:36px 0 8px}
+.tcard{background:var(--card);border-radius:var(--radius-l);padding:28px 24px;text-decoration:none;color:var(--ink);
+  transition:.35s cubic-bezier(.25,.46,.45,.94);display:flex;flex-direction:column;gap:9px;
+  box-shadow:var(--shadow-card)}
+.tcard:hover{transform:translateY(-4px) scale(1.015);box-shadow:var(--shadow-card-hover);opacity:1}
+.tcard .ico{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;background:linear-gradient(145deg,#f2f2f7,#e8e8ed);margin-bottom:4px}
+.tcard h3{font-family:var(--font-display);font-size:1.08rem;font-weight:650;letter-spacing:-.01em}
+.tcard p{color:var(--muted);font-size:.86rem;line-height:1.5;flex:1}
+.tcard .go{color:var(--vine);font-weight:600;font-size:.86rem}
 
-/* sections */
-section.block{padding:34px 0}
-h2.sec{font-size:1.5rem;font-weight:800;margin-bottom:6px}
-p.secdesc{color:var(--muted);margin-bottom:20px;max-width:700px}
+/* ===== 区块 ===== */
+section.block{padding:44px 0}
+h2.sec{font-family:var(--font-display);font-size:clamp(1.6rem,3vw,2.2rem);font-weight:750;letter-spacing:-.02em;margin-bottom:8px}
+p.secdesc{color:var(--muted);margin-bottom:24px;max-width:640px;font-size:1.02rem}
 
-/* tool panel */
-.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:18px;box-shadow:0 1px 3px rgba(34,48,31,.05)}
-.panel h3{display:flex;align-items:center;gap:10px;font-size:1.15rem;margin-bottom:4px}
-.panel .hint{color:var(--muted);font-size:.85rem;margin-bottom:16px}
-.field{margin-bottom:14px}
-.field label{display:block;font-weight:700;font-size:.85rem;margin-bottom:5px}
-.field input,.field select{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:1rem;background:#fff;color:var(--ink)}
-.field input:focus,.field select:focus{outline:none;border-color:var(--vine)}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+/* ===== 工具面板 ===== */
+.panel{background:var(--card);border-radius:var(--radius-l);padding:30px;margin-bottom:20px;
+  box-shadow:var(--shadow-card)}
+.panel h3{display:flex;align-items:center;gap:9px;font-family:var(--font-display);
+  font-size:1.18rem;font-weight:700;letter-spacing:-.01em;margin-bottom:5px}
+.panel .hint{color:var(--muted);font-size:.87rem;margin-bottom:20px}
+.field{margin-bottom:16px}
+.field label{display:block;font-weight:600;font-size:.82rem;margin-bottom:7px;color:var(--ink-2);letter-spacing:.01em}
+.field input,.field select,textarea#tempdata{
+  width:100%;padding:12px 14px;border:1px solid transparent;border-radius:var(--radius-m);
+  font-size:.98rem;background:#f5f5f7;color:var(--ink);transition:.2s;font-family:var(--font)}
+.field input:focus,.field select:focus,textarea#tempdata:focus{
+  outline:none;background:#fff;border-color:var(--vine);
+  box-shadow:0 0 0 3.5px rgba(0,113,227,.14)}
+textarea#tempdata{font-family:ui-monospace,"SF Mono",Consolas,monospace;font-size:.85rem;line-height:1.6}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 @media(max-width:640px){.grid2,.grid3{grid-template-columns:1fr}}
-button.btn{background:var(--vine);color:#fff;border:none;padding:11px 22px;border-radius:10px;font-weight:700;font-size:.95rem;cursor:pointer}
-button.btn:hover{background:var(--vine-dark)}
-button.btn.gold{background:var(--gold);color:#3a2f08}
-.result{margin-top:16px;padding:16px 18px;border-radius:12px;background:#f2f7ef;border:1px dashed #bcd4bd}
-.result .big{font-size:1.7rem;font-weight:900;color:var(--vine-dark)}
-.note{font-size:.78rem;color:var(--muted);margin-top:10px}
-.tag-ok{color:var(--vine-dark);font-weight:700}.tag-warn{color:var(--gold);font-weight:700}.tag-bad{color:var(--danger);font-weight:700}
 
-/* table */
-table.tbl{width:100%;border-collapse:collapse;font-size:.9rem;margin-top:12px}
-table.tbl th{background:#eef4ec;text-align:left;padding:9px 10px;border-bottom:2px solid var(--line)}
-table.tbl td{padding:8px 10px;border-bottom:1px solid var(--line)}
-table.tbl tr:hover td{background:#fbfcf9}
+/* 按钮：Apple 胶囊风 */
+button.btn{background:var(--vine);color:#fff;border:none;padding:11px 26px;border-radius:99px;
+  font-weight:600;font-size:.95rem;cursor:pointer;font-family:var(--font);letter-spacing:-.01em;
+  transition:.25s}
+button.btn:hover{background:var(--vine-dark);transform:scale(1.02)}
+button.btn:active{transform:scale(.98)}
+button.btn.gold{background:var(--ink)}
+button.btn.gold:hover{background:#000}
+button.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
 
-/* article */
-article.prose{max-width:760px;margin:0 auto;padding:38px 20px}
-article.prose h1{font-size:1.9rem;line-height:1.25;margin-bottom:8px}
-article.prose .meta{color:var(--muted);font-size:.85rem;margin-bottom:26px}
-article.prose h2{margin:28px 0 10px;font-size:1.3rem}
-article.prose p{margin-bottom:14px}
-article.prose ul,article.prose ol{margin:0 0 16px 22px}
-article.prose blockquote{border-left:4px solid var(--gold);background:#fdfaf0;padding:12px 16px;border-radius:0 10px 10px 0;margin:16px 0;font-size:.95rem}
+/* 结果区 */
+.result{margin-top:20px;padding:22px 24px;border-radius:var(--radius-m);background:var(--card-2);
+  border:1px solid var(--line)}
+.result .big{font-family:var(--font-display);font-size:2.2rem;font-weight:800;letter-spacing:-.02em;
+  color:var(--ink)}
+.note{font-size:.79rem;color:var(--muted);margin-top:12px;line-height:1.55}
+.tag-ok{color:#248a3d;font-weight:650}.tag-warn{color:#c93400;font-weight:650}.tag-bad{color:var(--danger);font-weight:650}
 
-/* cta / footer */
-.cta-band{background:linear-gradient(135deg,var(--vine-dark),var(--vine));color:#fff;border-radius:18px;padding:30px;text-align:center;margin:30px 0}
-.cta-band h3{font-size:1.3rem;margin-bottom:8px}
-footer.site{border-top:1px solid var(--line);margin-top:40px;padding:26px 0;color:var(--muted);font-size:.85rem}
+/* 表格：极简横线风 */
+table.tbl{width:100%;border-collapse:collapse;font-size:.88rem;margin-top:16px}
+table.tbl th{font-weight:650;color:var(--muted);text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+table.tbl td{padding:11px 12px;border-bottom:1px solid var(--line)}
+table.tbl tr:last-child td{border-bottom:none}
+table.tbl tr:hover td{background:#fafafc}
+
+/* 文章页 */
+article.prose{max-width:720px;margin:0 auto;padding:52px 24px}
+article.prose h1{font-family:var(--font-display);font-size:clamp(1.9rem,4vw,2.7rem);font-weight:800;
+  letter-spacing:-.025em;line-height:1.12;margin-bottom:10px}
+article.prose .meta{color:var(--muted);font-size:.86rem;margin-bottom:32px}
+article.prose h2{margin:38px 0 12px;font-family:var(--font-display);font-size:1.42rem;font-weight:700;letter-spacing:-.015em}
+article.prose p{margin-bottom:16px;color:var(--ink-2)}
+article.prose ul,article.prose ol{margin:0 0 18px 24px;color:var(--ink-2)}
+article.prose li{margin-bottom:7px}
+article.prose blockquote{border-left:3px solid var(--ink);padding:4px 0 4px 20px;margin:24px 0;
+  color:var(--muted);font-size:.95rem}
+article.prose code{background:rgba(0,0,0,.05);padding:2px 7px;border-radius:6px;font-size:.85em;
+  font-family:ui-monospace,"SF Mono",Consolas,monospace}
+
+/* CTA 带：黑底白字（Apple 产品区风格）*/
+.cta-band{background:#000;color:#fff;border-radius:var(--radius-l);padding:52px 36px;text-align:center;margin:40px 0}
+.cta-band h3{font-family:var(--font-display);font-size:clamp(1.5rem,3vw,2rem);font-weight:750;letter-spacing:-.02em;margin-bottom:10px}
+.cta-band p{opacity:.65;margin:0 0 24px;font-size:1.05rem}
+.cta-band a{background:#fff;color:var(--ink);padding:12px 30px;border-radius:99px;font-weight:600;
+  text-decoration:none;display:inline-block;transition:.25s;font-size:.95rem}
+.cta-band a:hover{transform:scale(1.04);opacity:1}
+
+/* 页脚 */
+footer.site{border-top:1px solid var(--line);margin-top:56px;padding:32px 0;color:var(--muted);font-size:.83rem}
 footer.site .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer.site a{color:var(--ink-2)}
 
-/* ad slot */
-.adslot{border:1.5px dashed var(--line);border-radius:12px;padding:14px;text-align:center;color:var(--muted);font-size:.8rem;background:#fff;margin:18px 0}
+/* 广告位占位 */
+.adslot{border:1px dashed var(--line);border-radius:var(--radius-m);padding:16px;text-align:center;
+  color:var(--muted);font-size:.78rem;background:transparent;margin:22px 0}
